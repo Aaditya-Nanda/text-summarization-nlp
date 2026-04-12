@@ -1,0 +1,24 @@
+# params.yaml
+
+TrainingArguments:
+  num_train_epochs: 1
+  warmup_steps: 500
+  per_device_train_batch_size: 1
+  per_device_eval_batch_size: 1
+  weight_decay: 0.01
+  logging_steps: 10
+  evaluation_strategy: steps
+  eval_steps: 500
+  save_steps: 1e6
+  gradient_accumulation_steps: 16
+  fp16: true                        # Enable for Colab T4 GPU
+  push_to_hub: true
+  hub_model_id: pegasus-samsum      # Your HF Hub repo name
+
+DataArguments:
+  train_subset_size: 2000           # Colab-safe subset
+  val_subset_size: 200
+  max_input_length: 512
+  max_target_length: 128
+  source_column: dialogue
+  target_column: summary
