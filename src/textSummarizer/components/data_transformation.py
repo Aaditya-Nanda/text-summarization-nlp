@@ -18,8 +18,7 @@ class DataTransformation:
         self.config = config
         logger.info(f"Loading tokenizer: {config.tokenizer_name}")
         self.tokenizer = AutoTokenizer.from_pretrained(config.tokenizer_name)
-        logger.info("Tokenizer loaded successfully.")
-
+        logger.info("Tokenizer loaded successfully.")  
     def convert_examples_to_features(self, batch: dict) -> dict:
     """
     Tokenizes a batch of dialogue-summary pairs.
@@ -27,20 +26,20 @@ class DataTransformation:
     - Summaries  → model labels  (truncated to max_target_length)
     """
     # Tokenize inputs and targets together (modern API)
-    model_inputs = self.tokenizer(
+        model_inputs = self.tokenizer(
         batch["dialogue"],
         text_target=batch["summary"],
         max_length=512,
         truncation=True,
         padding="max_length",
-    )
+        )
 
     # Replace padding token id with -100 so loss ignores padding
-    model_inputs["labels"] = [
+        model_inputs["labels"] = [
         [(token if token != self.tokenizer.pad_token_id else -100)
          for token in label]
         for label in model_inputs["labels"]
-    ]
+        ]
 
     return model_inputs
 
