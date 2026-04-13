@@ -15,7 +15,7 @@ os.environ.setdefault("STREAMLIT_SERVER_FILE_WATCHER_TYPE", "none")
 
 import streamlit as st
 
-PRIMARY_MODEL_ID = "Aaditya-Nanda/pegasus-samsum"
+PRIMARY_MODEL_ID = "vinnyawda/pegasus-samsum"
 LIGHTWEIGHT_FALLBACK_MODEL_ID = "sshleifer/distilbart-xsum-12-6"
 FALLBACK_MODEL_ID = "google/pegasus-xsum"
 
