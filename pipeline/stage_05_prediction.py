@@ -27,10 +27,10 @@ class PredictionPipeline:
         elif hub_model_id:
             source = hub_model_id
         else:
-            # Default: try local first, fall back to Hub
-            import os
-            local_path = "artifacts/model_trainer/pegasus-samsum-model"
-            source = local_path if os.path.exists(local_path) else "pegasus-samsum"
+            # NOTE: The local model was trained on only 100 samples (smoke test)
+            # and produces empty outputs. Using base google/pegasus-xsum instead.
+            # Switch to local_path after a full training run (2000+ samples).
+            source = "google/pegasus-xsum"
 
         logger.info(f"Loading tokenizer from: {source}")
         self.tokenizer = AutoTokenizer.from_pretrained(source)
@@ -69,8 +69,10 @@ class PredictionPipeline:
                 input_ids=inputs["input_ids"],
                 attention_mask=inputs["attention_mask"],
                 length_penalty=0.8,
-                num_beams=8,
+                num_beams=4,        # reduced from 8 for faster CPU inference
                 max_length=128,
+                min_length=10,      # prevent empty outputs
+                no_repeat_ngram_size=3,
             )
 
         summary = self.tokenizer.decode(
