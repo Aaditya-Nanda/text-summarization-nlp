@@ -1,7 +1,8 @@
-# app/app.py
-
 import sys
 import os
+
+# Add project root to path so pipeline/ and src/ are importable
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 import streamlit as st
