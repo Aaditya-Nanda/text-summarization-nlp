@@ -27,7 +27,8 @@ def load_pipeline():
     if token:
         from huggingface_hub import login
         login(token=token)
-    return PredictionPipeline(hub_model_id="Aaditya-Nanda/pegasus-samsum")
+    # Fall back to base model since fine-tuned model isn't on Hub yet
+    return PredictionPipeline(hub_model_id="google/pegasus-xsum")
 
 pipeline = load_pipeline()
 
