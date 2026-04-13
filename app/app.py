@@ -32,7 +32,7 @@ st.set_page_config(
 # Load model once and cache it                                         #
 # ------------------------------------------------------------------ #
 @st.cache_resource(show_spinner=True)
-def load_pipeline():
+def load_pipeline(preferred_model_id=PRIMARY_MODEL_ID):
     import os
     from pipeline.stage_05_prediction import PredictionPipeline
 
@@ -42,11 +42,10 @@ def load_pipeline():
 
         login(token=token)
 
-    model_candidates = [
-        PRIMARY_MODEL_ID,
-        LIGHTWEIGHT_FALLBACK_MODEL_ID,
-        FALLBACK_MODEL_ID,
-    ]
+    model_candidates = [preferred_model_id]
+    for model_id in [PRIMARY_MODEL_ID, LIGHTWEIGHT_FALLBACK_MODEL_ID, FALLBACK_MODEL_ID]:
+        if model_id not in model_candidates:
+            model_candidates.append(model_id)
     last_error = None
     for model_id in model_candidates:
         try:
@@ -104,8 +103,13 @@ if summarize:
     else:
         try:
             with st.spinner("Generating summary..."):
-                pipeline, loaded_model_id = load_pipeline()
+                pipeline, loaded_model_id = load_pipeline(PRIMARY_MODEL_ID)
                 summary = pipeline.predict(dialogue)
+                if not summary.strip():
+                    pipeline, loaded_model_id = load_pipeline(
+                        LIGHTWEIGHT_FALLBACK_MODEL_ID
+                    )
+                    summary = pipeline.predict(dialogue)
             st.divider()
             st.subheader("Generated Summary")
             st.success(summary)
