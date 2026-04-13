@@ -19,157 +19,172 @@ PRIMARY_MODEL_ID = "vinnyawda/pegasus-samsum"
 LIGHTWEIGHT_FALLBACK_MODEL_ID = "philschmid/bart-large-cnn-samsum"
 FALLBACK_MODEL_ID = "google/pegasus-xsum"
 
-# ------------------------------------------------------------------ #
-# Page config
-# ------------------------------------------------------------------ #
 st.set_page_config(
-    page_title="Dialogue Summarizer | OpenCode",
+    page_title="Summarization CLI",
     page_icon="⚡",
     layout="centered",
     initial_sidebar_state="collapsed"
 )
 
-# ------------------------------------------------------------------ #
-# Custom CSS
-# ------------------------------------------------------------------ #
+# =========================
+# 🎨 CUSTOM CSS (OPENCODE STYLE)
+# =========================
 st.markdown("""
 <style>
-    /* Global Base */
-    .stApp {
-        background-color: #0a0a0a !important;
-        font-family: 'Inter', -apple-system, sans-serif !important;
-    }
-    
-    /* Typography */
-    h1 {
-        font-weight: 700 !important;
-        letter-spacing: -0.04em !important;
-        color: #ffffff !important;
-        font-size: 2.2rem !important;
-        margin-bottom: 0.2rem !important;
-        padding-bottom: 0 !important;
-    }
-    h3 {
-        font-weight: 500 !important;
-        color: #a1a1aa !important;
-        font-size: 1.1rem !important;
-        margin-top: 0 !important;
-    }
-    
-    /* Text Area Command Bar Styling */
-    .stTextArea textarea {
-        background-color: #121214 !important;
-        border: 1px solid #27272a !important;
-        border-radius: 12px !important;
-        color: #e4e4e7 !important;
-        font-family: 'JetBrains Mono', 'Fira Code', monospace !important;
-        font-size: 0.95rem !important;
-        padding: 1.2rem !important;
-        box-shadow: inset 0 2px 4px rgba(0,0,0,0.2) !important;
-        transition: all 0.2s ease-in-out !important;
-    }
-    .stTextArea textarea:focus {
-        border-color: #6366f1 !important;
-        box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2), inset 0 2px 4px rgba(0,0,0,0.2) !important;
-    }
-    
-    /* Buttons */
-    .stButton > button[kind="primary"] {
-        background: linear-gradient(135deg, #4f46e5 0%, #3b82f6 100%) !important;
-        color: white !important;
-        border: none !important;
-        border-radius: 8px !important;
-        font-weight: 500 !important;
-        padding: 0.6rem 1.2rem !important;
-        transition: all 0.2s ease !important;
-        width: 100% !important;
-    }
-    .stButton > button[kind="primary"]:hover {
-        opacity: 0.9 !important;
-        box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4) !important;
-    }
-    
-    .stButton > button[kind="secondary"] {
-        background-color: #18181b !important;
-        color: #a1a1aa !important;
-        border: 1px solid #27272a !important;
-        border-radius: 8px !important;
-        transition: all 0.2s ease !important;
-        width: 100% !important;
-    }
-    .stButton > button[kind="secondary"]:hover {
-        background-color: #27272a !important;
-        color: #f4f4f5 !important;
-    }
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono&display=swap');
 
-    /* Terminal Output Panel */
-    .terminal-output {
-        background-color: #0f0f11;
-        border: 1px solid #27272a;
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin-top: 1rem;
-        margin-bottom: 1.5rem;
-        box-shadow: 0 8px 30px rgba(0,0,0,0.4);
-        position: relative;
-    }
-    .terminal-header {
-        display: flex;
-        align-items: center;
-        margin-bottom: 1rem;
-        border-bottom: 1px solid #27272a;
-        padding-bottom: 0.8rem;
-    }
-    .terminal-dot {
-        height: 10px;
-        width: 10px;
-        border-radius: 50%;
-        display: inline-block;
-        margin-right: 6px;
-    }
-    .terminal-title {
-        color: #71717a;
-        font-family: 'JetBrains Mono', 'Fira Code', monospace;
-        font-size: 0.8rem;
-        margin-left: 10px;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-    }
-    .terminal-content {
-        color: #10b981; /* Emerald green for output */
-        font-family: 'JetBrains Mono', 'Fira Code', monospace;
-        font-size: 0.95rem;
-        line-height: 1.6;
-        white-space: pre-wrap;
-    }
-    
-    /* Metrics */
-    [data-testid="stMetricValue"] {
-        font-size: 1.4rem !important;
-        color: #f4f4f5 !important;
-    }
-    [data-testid="stMetricLabel"] {
-        color: #a1a1aa !important;
-    }
-    
-    /* Utility */
-    .helper-text {
-        font-size: 0.8rem;
-        color: #52525b;
-        margin-top: -12px;
-        margin-bottom: 16px;
-        font-family: 'JetBrains Mono', monospace;
-    }
-    
-    /* Hide Streamlit Branding elements */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
+html, body, [class*="css"] {
+    font-family: 'Inter', sans-serif !important;
+    background-color: #0a0a0a !important;
+    color: #e5e7eb !important;
+}
+
+/* Base Streamlit App Background */
+.stApp {
+    background-color: #0a0a0a !important;
+}
+
+/* Title */
+.title {
+    font-size: 2.2rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    letter-spacing: -0.02em;
+    margin-bottom: 5px;
+    color: #fff;
+}
+
+/* Subtitle */
+.subtitle {
+    color: #9ca3af;
+    font-size: 1.1rem;
+    margin-bottom: 25px;
+}
+
+/* Input box */
+.stTextArea textarea {
+    background-color: #111827 !important;
+    color: #e5e7eb !important;
+    border-radius: 12px !important;
+    border: 1px solid #1f2937 !important;
+    font-family: 'JetBrains Mono', monospace !important;
+    font-size: 14px !important;
+    padding: 16px !important;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2) !important;
+    transition: all 0.2s ease-in-out !important;
+}
+.stTextArea textarea:focus {
+    border-color: #6366f1 !important;
+    box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2), inset 0 2px 4px rgba(0,0,0,0.2) !important;
+}
+
+/* Buttons */
+.stButton>button {
+    border-radius: 10px !important;
+    padding: 10px 20px !important;
+    border: none !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease !important;
+    width: 100% !important;
+}
+
+.stButton>button[kind="primary"] {
+    background: linear-gradient(135deg, #6366f1, #3b82f6) !important;
+    color: white !important;
+}
+.stButton>button[kind="primary"]:hover {
+    opacity: 0.9 !important;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4) !important;
+}
+
+.stButton>button[kind="secondary"] {
+    background-color: #1f2937 !important;
+    color: #d1d5db !important;
+    border: 1px solid #374151 !important;
+}
+.stButton>button[kind="secondary"]:hover {
+    background-color: #374151 !important;
+    color: #f3f4f6 !important;
+}
+
+/* Terminal Output */
+.terminal {
+    background: #020617;
+    border-radius: 12px;
+    padding: 15px 20px;
+    border: 1px solid #1f2937;
+    margin-top: 20px;
+    margin-bottom: 25px;
+    font-family: 'JetBrains Mono', monospace;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+}
+
+/* Terminal header */
+.terminal-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 15px;
+    padding-bottom: 12px;
+    border-bottom: 1px dashed #334155;
+}
+
+.dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.red { background: #ef4444; }
+.yellow { background: #f59e0b; }
+.green { background: #10b981; }
+
+.terminal-title {
+    color: #64748b;
+    font-size: 0.85rem;
+    margin-left: auto;
+}
+
+/* Output text */
+.output {
+    color: #10b981;
+    white-space: pre-wrap;
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+/* Error */
+.error-box {
+    background: #7f1d1d;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 15px;
+    color: #fecaca;
+    font-weight: 500;
+}
+
+/* Metrics */
+[data-testid="stMetricValue"] {
+    font-size: 1.6rem !important;
+    color: #f3f4f6 !important;
+}
+[data-testid="stMetricLabel"] {
+    color: #9ca3af !important;
+    font-size: 0.9rem !important;
+}
+
+/* Hide Streamlit Branding elements */
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
 </style>
 """, unsafe_allow_html=True)
 
-# ------------------------------------------------------------------ #
-# Load model once and cache it
-# ------------------------------------------------------------------ #
+
+# =========================
+# 🧠 MODEL PIPELINE
+# =========================
 @st.cache_resource(show_spinner=True)
 def load_pipeline(preferred_model_id=PRIMARY_MODEL_ID):
     import os
@@ -194,14 +209,12 @@ def load_pipeline(preferred_model_id=PRIMARY_MODEL_ID):
 
     raise RuntimeError("Unable to load any summarization model.") from last_error
 
-# ------------------------------------------------------------------ #
-# UI Layout
-# ------------------------------------------------------------------ #
 
-# Header
-st.markdown("<h1>⚡ Summarization CLI</h1>", unsafe_allow_html=True)
-st.markdown("### Abstractive compression using fine-tuned NLP models", unsafe_allow_html=True)
-st.markdown("<br>", unsafe_allow_html=True)
+# =========================
+# 🎨 HEADER
+# =========================
+st.markdown('<div class="title">⚡ Summarization CLI</div>', unsafe_allow_html=True)
+st.markdown('<div class="subtitle">Abstractive compression using NLP models</div>', unsafe_allow_html=True)
 
 # Sample dialogue button
 SAMPLE = """Hannah: Hey, are you free this weekend?
@@ -218,19 +231,23 @@ with col_sample:
     if st.button("Load Example", use_container_width=True):
         st.session_state["dialogue"] = SAMPLE
 
-dialogue = st.text_area(
-    label="Input Dialog",
-    label_visibility="collapsed",
+# =========================
+# ✏ INPUT
+# =========================
+dialogue = st.text_area("",
     value=st.session_state.get("dialogue", ""),
-    height=220,
     placeholder="> Paste your dialogue here...",
+    height=220,
+    label_visibility="collapsed"
 )
 
-st.markdown("<div class='helper-text'>Press Ctrl+Enter to apply line breaks. Click Summarize to execute.</div>", unsafe_allow_html=True)
+st.caption("Press Ctrl + Enter to apply line breaks")
 
 col1, col2, col3 = st.columns([2, 1, 4])
+
 with col1:
     summarize = st.button("Summarize", type="primary")
+
 with col2:
     clear = st.button("Clear")
 
@@ -238,9 +255,12 @@ if clear:
     st.session_state["dialogue"] = ""
     st.rerun()
 
+# =========================
+# 🚀 EXECUTION
+# =========================
 if summarize:
     if not dialogue.strip():
-        st.error("Input cannot be empty. Please paste a dialogue.")
+        st.markdown('<div class="error-box">⚠ Input cannot be empty. Please paste a dialogue.</div>', unsafe_allow_html=True)
     else:
         try:
             with st.spinner("Processing generation pipeline..."):
@@ -253,15 +273,19 @@ if summarize:
             
             # Render Terminal Output
             st.markdown(f"""
-                <div class="terminal-output">
-                    <div class="terminal-header">
-                        <span class="terminal-dot" style="background-color: #ef4444;"></span>
-                        <span class="terminal-dot" style="background-color: #eab308;"></span>
-                        <span class="terminal-dot" style="background-color: #22c55e;"></span>
-                        <span class="terminal-title">Output // {loaded_model_id}</span>
-                    </div>
-                    <div class="terminal-content">{summary}</div>
+            <div class="terminal">
+                <div class="terminal-header">
+                    <div class="dot red"></div>
+                    <div class="dot yellow"></div>
+                    <div class="dot green"></div>
+                    <div class="terminal-title">Output // {loaded_model_id}</div>
                 </div>
+                <div class="output">
+● Summarization complete
+
+→ {summary}
+                </div>
+            </div>
             """, unsafe_allow_html=True)
             
             if loaded_model_id != PRIMARY_MODEL_ID:
@@ -282,10 +306,7 @@ if summarize:
             c3.metric("Compression", f"{ratio}x")
             
         except Exception as exc:
-            st.error("Execution Failed: Model loading timeout or OOM on deployment.")
-            st.code(str(exc), language="text")
+            st.markdown(f'<div class="error-box">⚠ Execution Failed: Model loading timeout or OOM on deployment.<br>{exc}</div>', unsafe_allow_html=True)
 
 st.markdown("<br><br>", unsafe_allow_html=True)
-st.caption(
-    "Powered by HuggingFace Transformers & Streamlit | Developer Toolkit V1"
-)
+st.caption("Powered by HuggingFace Transformers & Streamlit | Developer Toolkit V1")
