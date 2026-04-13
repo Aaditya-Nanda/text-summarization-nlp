@@ -14,6 +14,7 @@ import streamlit as st
 from pipeline.stage_05_prediction import PredictionPipeline
 
 PRIMARY_MODEL_ID = "Aaditya-Nanda/pegasus-samsum"
+LIGHTWEIGHT_FALLBACK_MODEL_ID = "sshleifer/distilbart-xsum-12-6"
 FALLBACK_MODEL_ID = "google/pegasus-xsum"
 
 # ------------------------------------------------------------------ #
@@ -38,12 +39,20 @@ def load_pipeline():
 
         login(token=token)
 
-    try:
-        pipeline = PredictionPipeline(hub_model_id=PRIMARY_MODEL_ID)
-        return pipeline, PRIMARY_MODEL_ID
-    except Exception:
-        pipeline = PredictionPipeline(hub_model_id=FALLBACK_MODEL_ID)
-        return pipeline, FALLBACK_MODEL_ID
+    model_candidates = [
+        PRIMARY_MODEL_ID,
+        LIGHTWEIGHT_FALLBACK_MODEL_ID,
+        FALLBACK_MODEL_ID,
+    ]
+    last_error = None
+    for model_id in model_candidates:
+        try:
+            pipeline = PredictionPipeline(hub_model_id=model_id)
+            return pipeline, model_id
+        except Exception as exc:
+            last_error = exc
+
+    raise RuntimeError("Unable to load any summarization model.") from last_error
 
 # ------------------------------------------------------------------ #
 # UI                                                                   #
@@ -90,27 +99,34 @@ if summarize:
     if not dialogue.strip():
         st.warning("Please paste a dialogue before clicking Summarize.")
     else:
-        with st.spinner("Generating summary..."):
-            pipeline, loaded_model_id = load_pipeline()
-            summary = pipeline.predict(dialogue)
-        st.divider()
-        st.subheader("Generated Summary")
-        st.success(summary)
-        if loaded_model_id != PRIMARY_MODEL_ID:
-            st.info(
-                "Fine-tuned model is unavailable right now, so the app used "
-                f"`{loaded_model_id}` instead."
+        try:
+            with st.spinner("Generating summary..."):
+                pipeline, loaded_model_id = load_pipeline()
+                summary = pipeline.predict(dialogue)
+            st.divider()
+            st.subheader("Generated Summary")
+            st.success(summary)
+            if loaded_model_id != PRIMARY_MODEL_ID:
+                st.info(
+                    "Fine-tuned model is unavailable right now, so the app used "
+                    f"`{loaded_model_id}` instead."
+                )
+
+            # Word count stats
+            dialogue_words = len(dialogue.split())
+            summary_words = len(summary.split())
+            ratio = round(dialogue_words / max(summary_words, 1), 1)
+
+            c1, c2, c3 = st.columns(3)
+            c1.metric("Dialogue words", dialogue_words)
+            c2.metric("Summary words", summary_words)
+            c3.metric("Compression ratio", f"{ratio}x")
+        except Exception as exc:
+            st.error(
+                "The summarization model could not be loaded on this deployment. "
+                "Please try again in a moment."
             )
-
-        # Word count stats
-        dialogue_words = len(dialogue.split())
-        summary_words = len(summary.split())
-        ratio = round(dialogue_words / max(summary_words, 1), 1)
-
-        c1, c2, c3 = st.columns(3)
-        c1.metric("Dialogue words", dialogue_words)
-        c2.metric("Summary words", summary_words)
-        c3.metric("Compression ratio", f"{ratio}x")
+            st.exception(exc)
 
 # ------------------------------------------------------------------ #
 # Footer                                                               #

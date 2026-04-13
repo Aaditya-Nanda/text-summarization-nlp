@@ -36,10 +36,16 @@ class PredictionPipeline:
         self.tokenizer = AutoTokenizer.from_pretrained(source)
 
         logger.info(f"Loading model from: {source}")
-        self.model = AutoModelForSeq2SeqLM.from_pretrained(
-            source,
-            torch_dtype=torch.float16 if self.device == "cuda" else torch.float32,
-        ).to(self.device)
+        model_kwargs = {
+            "dtype": torch.float16 if self.device == "cuda" else torch.float32,
+        }
+        if self.device == "cpu":
+            # Reduce peak RAM usage on Streamlit Community Cloud.
+            model_kwargs["low_cpu_mem_usage"] = True
+
+        self.model = AutoModelForSeq2SeqLM.from_pretrained(source, **model_kwargs)
+        if self.device == "cuda":
+            self.model = self.model.to(self.device)
         self.model.eval()
         logger.info("Prediction pipeline ready.")
 
