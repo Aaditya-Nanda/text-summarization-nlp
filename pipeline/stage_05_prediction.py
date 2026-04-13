@@ -37,7 +37,7 @@ class PredictionPipeline:
 
         logger.info(f"Loading model from: {source}")
         model_kwargs = {
-            "dtype": torch.float16 if self.device == "cuda" else torch.float32,
+            "dtype": torch.float16 if self.device == "cuda" else "auto",
         }
         if self.device == "cpu":
             # Reduce peak RAM usage on Streamlit Community Cloud.
@@ -64,9 +64,8 @@ class PredictionPipeline:
 
         inputs = self.tokenizer(
             dialogue,
-            max_length=512,
+            max_length=384,
             truncation=True,
-            padding="max_length",
             return_tensors="pt",
         ).to(self.device)
 
@@ -74,11 +73,13 @@ class PredictionPipeline:
             summaries = self.model.generate(
                 input_ids=inputs["input_ids"],
                 attention_mask=inputs["attention_mask"],
-                length_penalty=0.8,
-                num_beams=4,        # reduced from 8 for faster CPU inference
-                max_length=128,
-                min_length=10,      # prevent empty outputs
-                no_repeat_ngram_size=3,
+                length_penalty=1.0,
+                num_beams=2,
+                max_new_tokens=64,
+                min_new_tokens=8,
+                no_repeat_ngram_size=2,
+                use_cache=False if self.device == "cpu" else True,
+                early_stopping=True,
             )
 
         summary = self.tokenizer.decode(
