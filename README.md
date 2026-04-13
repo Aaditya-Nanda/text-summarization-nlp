@@ -195,7 +195,7 @@ sentencepiece   — Pegasus tokenizer
 ## 👤 Author
 
 **Aaditya Nanda**
-- LinkedIn: [linkedin.com/in/aaditya-nanda](https://linkedin.com/in/aaditya-nanda)
+- LinkedIn: [linkedin.com/in/aaditya-nanda](https://www.linkedin.com/in/aaditya-nanda-1668b3257/)
 - GitHub: [github.com/Aaditya-Nanda](https://github.com/Aaditya-Nanda)
 
 ---
