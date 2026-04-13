@@ -4,3 +4,4 @@ sentencepiece
 accelerate
 huggingface_hub
 torch==2.11.0
+torchvision

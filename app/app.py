@@ -20,15 +20,20 @@ st.set_page_config(
 # ------------------------------------------------------------------ #
 # Load model once and cache it                                         #
 # ------------------------------------------------------------------ #
-@st.cache_resource(show_spinner="Loading summarization model...")
+@st.cache_resource(show_spinner=True)
 def load_pipeline():
     import os
     token = os.environ.get("HF_TOKEN")
     if token:
         from huggingface_hub import login
         login(token=token)
-    # Fall back to base model since fine-tuned model isn't on Hub yet
-    return PredictionPipeline(hub_model_id="google/pegasus-xsum")
+        
+    try:
+        # Try loading your fine-tuned model first
+        return PredictionPipeline(hub_model_id="Aaditya-Nanda/pegasus-samsum")
+    except Exception:
+        # Fallback to the base model if the fine-tuned one 404s
+        return PredictionPipeline(hub_model_id="google/pegasus-xsum")
 
 pipeline = load_pipeline()
 
