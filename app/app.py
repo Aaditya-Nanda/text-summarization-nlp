@@ -1,12 +1,20 @@
-import sys
 import os
+import sys
+from pathlib import Path
 
-# Add project root to path so pipeline/ and src/ are importable
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
+APP_DIR = Path(__file__).resolve().parent
+PROJECT_ROOT = APP_DIR.parent
+SRC_DIR = PROJECT_ROOT / "src"
+
+# Add project root to path so pipeline/ and src/ are importable.
+sys.path.insert(0, str(PROJECT_ROOT))
+sys.path.insert(0, str(SRC_DIR))
 
 import streamlit as st
 from pipeline.stage_05_prediction import PredictionPipeline
+
+PRIMARY_MODEL_ID = "Aaditya-Nanda/pegasus-samsum"
+FALLBACK_MODEL_ID = "google/pegasus-xsum"
 
 # ------------------------------------------------------------------ #
 # Page config                                                          #
@@ -23,19 +31,19 @@ st.set_page_config(
 @st.cache_resource(show_spinner=True)
 def load_pipeline():
     import os
+
     token = os.environ.get("HF_TOKEN")
     if token:
         from huggingface_hub import login
-        login(token=token)
-        
-    try:
-        # Try loading your fine-tuned model first
-        return PredictionPipeline(hub_model_id="Aaditya-Nanda/pegasus-samsum")
-    except Exception:
-        # Fallback to the base model if the fine-tuned one 404s
-        return PredictionPipeline(hub_model_id="google/pegasus-xsum")
 
-pipeline = load_pipeline()
+        login(token=token)
+
+    try:
+        pipeline = PredictionPipeline(hub_model_id=PRIMARY_MODEL_ID)
+        return pipeline, PRIMARY_MODEL_ID
+    except Exception:
+        pipeline = PredictionPipeline(hub_model_id=FALLBACK_MODEL_ID)
+        return pipeline, FALLBACK_MODEL_ID
 
 # ------------------------------------------------------------------ #
 # UI                                                                   #
@@ -83,10 +91,16 @@ if summarize:
         st.warning("Please paste a dialogue before clicking Summarize.")
     else:
         with st.spinner("Generating summary..."):
+            pipeline, loaded_model_id = load_pipeline()
             summary = pipeline.predict(dialogue)
         st.divider()
         st.subheader("Generated Summary")
         st.success(summary)
+        if loaded_model_id != PRIMARY_MODEL_ID:
+            st.info(
+                "Fine-tuned model is unavailable right now, so the app used "
+                f"`{loaded_model_id}` instead."
+            )
 
         # Word count stats
         dialogue_words = len(dialogue.split())
