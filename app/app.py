@@ -10,8 +10,10 @@ SRC_DIR = PROJECT_ROOT / "src"
 sys.path.insert(0, str(PROJECT_ROOT))
 sys.path.insert(0, str(SRC_DIR))
 
+# Avoid Streamlit's file watcher scanning large dependency trees on Cloud.
+os.environ.setdefault("STREAMLIT_SERVER_FILE_WATCHER_TYPE", "none")
+
 import streamlit as st
-from pipeline.stage_05_prediction import PredictionPipeline
 
 PRIMARY_MODEL_ID = "Aaditya-Nanda/pegasus-samsum"
 LIGHTWEIGHT_FALLBACK_MODEL_ID = "sshleifer/distilbart-xsum-12-6"
@@ -32,6 +34,7 @@ st.set_page_config(
 @st.cache_resource(show_spinner=True)
 def load_pipeline():
     import os
+    from pipeline.stage_05_prediction import PredictionPipeline
 
     token = os.environ.get("HF_TOKEN")
     if token:
