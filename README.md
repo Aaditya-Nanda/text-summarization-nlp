@@ -16,7 +16,9 @@
 
 Paste any conversation and get an abstractive summary instantly.
 
-![App Screenshot](https://i.imgur.com/placeholder.png)
+## 🚀 App Preview
+
+![App Screenshot](https://github.com/Aaditya-Nanda/text-summarization-nlp/raw/main/Screenshot%202026-04-13%20220226.png)
 
 ---
 
