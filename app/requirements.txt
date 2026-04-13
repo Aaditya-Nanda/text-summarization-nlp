@@ -1,6 +1,6 @@
-streamlit==1.33.0
-transformers==4.44.0
-sentencepiece==0.2.0
-accelerate==0.33.0
-huggingface_hub==0.24.0
+streamlit
+transformers
+sentencepiece
+accelerate
+huggingface_hub
 torch==2.11.0
