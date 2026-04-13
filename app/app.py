@@ -19,9 +19,14 @@ st.set_page_config(
 # ------------------------------------------------------------------ #
 # Load model once and cache it                                         #
 # ------------------------------------------------------------------ #
-@st.cache_resource(show_spinner="Loading model...")
+@st.cache_resource(show_spinner="Loading summarization model...")
 def load_pipeline():
-    return PredictionPipeline()
+    import os
+    token = os.environ.get("HF_TOKEN")
+    if token:
+        from huggingface_hub import login
+        login(token=token)
+    return PredictionPipeline(hub_model_id="Aaditya-Nanda/pegasus-samsum")
 
 pipeline = load_pipeline()
 
